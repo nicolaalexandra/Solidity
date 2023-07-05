@@ -1,9 +1,9 @@
-pragma solidity ^0.5.4;
+pragma solidity ^0.8.17;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract myToken is ERC20{ // we inherit from ERC20
+contract AlexandraToken is ERC20, AccessControl{ // we inherit from ERC20
 
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
@@ -12,10 +12,10 @@ contract myToken is ERC20{ // we inherit from ERC20
         // solidity does not represent decimal values => scale
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);
-        _mint(msg.sender,initialSupply, initialSupply * 10 ** decimals()); // what does mint do?
+        _mint(msg.sender,initialSupply * 10 ** decimals()); // what does mint do?
     }
 
-    function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE){
-        _mint(to,amount);
+    function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {
+        _mint(to, amount);
     }
 }

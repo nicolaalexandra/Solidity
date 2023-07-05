@@ -1,23 +1,26 @@
-//import {ethers} from "ethers";
+const hre = require("hardhat");
 
 async function main() {
-    const MyContract = await ethers.getContractFactory("MyContract");
-    const myContract = await MyContract.deploy("Hello World");
-    console.log("Contract deployed to address:", myContract.address);
+    const [deployer] = await hre.ethers.getSigners();
 
-    const currentValue = await myContract.getMessage();
-    console.log("Current value:", currentValue);
+    console.log("Deploying contract with acconut: ", deployer.address);
+    console.log("Account balance: ", (await deployer.getBalance()).toString());
 
-    const transactionResponse = await myContract.updateMessage("A new message");
-    await transactionResponse.wait(1);
+    const alexandraToken = await hre.ethers.getContractFactory("AlexandraToken");
+    const token = await alexandraToken.deploy(50000000000);
 
-    const newValue = await myContract.getMessage();
-    console.log("New value:", newValue);
+    await token.deployed();
+
+    console.log("Token address: ",token.address);
+
+    await hre.run("verify:verify", {
+        address: token.address,
+        constructorArguments: [50000000000]
+    });
+
 }
 
-main()
-    .then(() => process.exit(0))
-    .catch((error) => {
-        console.error(error);
-        process.exit(1);
-    });
+main().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+});
