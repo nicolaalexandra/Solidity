@@ -17,7 +17,7 @@ describe("Ale", function(){
 
     it("should return the total supply", async function () {
 
-        await token.deployed();
+        //await token.deployed();
 
         const totalSupply = await token.totalSupply();
 
@@ -25,7 +25,7 @@ describe("Ale", function(){
         expect(totalSupply).to.equal(expected);
     });
 
-    it("success transfer", async function(){
+    it("can transfer successfully", async function(){
 
         // check initial balances
         let ownerBalance = await token.balanceOf(owner.address);
@@ -59,15 +59,15 @@ describe("Ale", function(){
     });
 
     it("transfer on behalf of the owner", async function(){
-        await token.transfer(recipient.address,10);
+       // await token.transfer(recipient.address,10);
         await token.approve(recipient.address,5); // recipient can spend 5 on behalf of the owner
 
-        await token.connect(recipient).transfer(otherAddress,3);
+        await token.connect(recipient).transferFrom(owner.address, otherAddress,3);
 
-        expect(await token.balanceOf(recipient.address)).to.equal(7);
+        expect(await token.balanceOf(recipient.address)).to.equal(0);
         expect(await token.balanceOf(otherAddress)).to.equal(3);
 
         // try to send more than you can
-        await expect(token.connect(recipient).transfer(otherAddress, 10)).to.be.revertedWith('ERC20: transfer amount exceeds balance')
+        await expect(token.connect(recipient).transferFrom(owner.address,otherAddress, 10)).to.be.revertedWith('ERC20: insufficient allowance')
     });
 });
